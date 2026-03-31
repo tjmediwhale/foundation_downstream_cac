@@ -100,13 +100,14 @@ def main() -> None:
 
     if not downstream_ckpt:
         raise ValueError("Missing inference.downstream_checkpoint in config")
-    if not foundation_ckpt:
-        raise ValueError("Missing model.foundation.checkpoint in config")
     if not dinov3_repo:
         raise ValueError("Missing model.foundation.dinov3_repo in config")
 
     cfg["inference"]["downstream_checkpoint"] = _resolve_path(downstream_ckpt, config_dir)
-    cfg["model"]["foundation"]["checkpoint"] = _resolve_path(foundation_ckpt, config_dir)
+    if foundation_ckpt:
+        cfg["model"]["foundation"]["checkpoint"] = _resolve_path(foundation_ckpt, config_dir)
+    else:
+        cfg["model"]["foundation"]["checkpoint"] = None
     cfg["model"]["foundation"]["dinov3_repo"] = _resolve_path(dinov3_repo, config_dir)
 
     image_path = Path(args.image).resolve()
@@ -143,7 +144,7 @@ def main() -> None:
         "pred_label": "CAC>0" if pred_binary == 1 else "CAC=0",
         "device": str(device),
         "downstream_checkpoint": cfg["inference"]["downstream_checkpoint"],
-        "foundation_checkpoint": cfg["model"]["foundation"]["checkpoint"],
+        "foundation_checkpoint": cfg["model"]["foundation"].get("checkpoint"),
         "num_missing_keys": len(ckpt_info.get("missing_keys", [])),
         "num_unexpected_keys": len(ckpt_info.get("unexpected_keys", [])),
     }

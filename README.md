@@ -30,13 +30,15 @@ pip install -r requirements.txt
 1. Downstream 체크포인트:  
 `/home/tj/Research/foundation_downstream_task/cac/output/<run_name>/checkpoints/best.pt`
 
-2. Foundation(DINOv3) 체크포인트: 학습 때 사용한 backbone 가중치 파일
-
-3. DINOv3 코드: `third_party/dinov3`에 clone
+2. DINOv3 코드: `third_party/dinov3`에 clone
 ```bash
 mkdir -p third_party
 git clone https://github.com/facebookresearch/dinov3.git third_party/dinov3
 ```
+
+3. (선택) Foundation(DINOv3) 체크포인트  
+보통 `best.pt`에 foundation + downstream 가중치가 함께 들어있어 추가 파일이 필요 없습니다.  
+만약 downstream만 저장된 체크포인트를 쓰는 경우에만 `model.foundation.checkpoint`를 설정하세요.
 
 그리고 `configs/inference.yaml`에서 경로를 맞춰주세요.
 
@@ -52,9 +54,17 @@ python3 scripts/infer_image.py \
 python3 scripts/infer_image.py \
   --image /absolute/path/to/fundus.jpg \
   --downstream_checkpoint /absolute/path/to/best.pt \
-  --foundation_checkpoint /absolute/path/to/foundation.pt \
   --dinov3_repo /absolute/path/to/dinov3 \
   --threshold 0.5
+```
+
+foundation checkpoint가 필요할 때만 추가:
+```bash
+python3 scripts/infer_image.py \
+  --image /absolute/path/to/fundus.jpg \
+  --downstream_checkpoint /absolute/path/to/best.pt \
+  --foundation_checkpoint /absolute/path/to/foundation.pt \
+  --dinov3_repo /absolute/path/to/dinov3
 ```
 
 JSON 파일로 저장:
@@ -76,4 +86,3 @@ git push -u origin main
 ```
 
 주의: `weights/*.pt`는 `.gitignore`에 포함되어 있으므로 모델 파일은 업로드되지 않습니다.
-

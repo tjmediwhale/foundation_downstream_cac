@@ -1,7 +1,7 @@
 model:
   foundation:
     architecture: "dinov3_vitl16"
-    checkpoint: "./weights/foundation_backbone.pt"
+    checkpoint: null
     dinov3_repo: "./third_party/dinov3"
     feature_type: "cls"
     freeze_backbone: true
