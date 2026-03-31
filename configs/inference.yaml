@@ -20,8 +20,16 @@ model:
     output_classes: 2
 
 data:
+  image_column: "jpg_h1024_path"
+  target_column: "cac_score"
+  id_columns: ["patient_id", "exam_id", "image_id"]
+  local_prefix: "/nas/mediwhale_processed_data/"
+  force_rescan: false
+  num_workers: 8
+  pin_memory: true
+  persistent_workers: true
   preprocessing:
-    use_drnoon_preprocess: false
+    use_drnoon_preprocess: true
     drnoon_precrop: 0.4
     drnoon_circle_mask: true
     image_size: 1024
@@ -34,3 +42,4 @@ training:
 inference:
   downstream_checkpoint: "./weights/cac_best.pt"
   threshold: 0.5
+  batch_size: 16
