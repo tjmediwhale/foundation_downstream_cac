@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+
+# logs / outputs
+outputs/
+
+# large model weights
+weights/*.pt
+weights/*.pth
+weights/*.bin
+
+# optional third-party repos
+third_party/dinov3/

@@ -1,0 +1,36 @@
+model:
+  foundation:
+    architecture: "dinov3_vitl16"
+    checkpoint: "./weights/foundation_backbone.pt"
+    dinov3_repo: "./third_party/dinov3"
+    feature_type: "cls"
+    freeze_backbone: true
+    freeze_layers: 0
+    use_feature_cache: false
+    feature_cache_size: 10000
+    feature_cache_dir: null
+  downstream:
+    type: "transformer"
+    hidden_dim: 512
+    num_layers: 3
+    num_heads: 8
+    num_tokens: 4
+    mlp_expansion: 2
+    dropout: 0.2
+    output_classes: 2
+
+data:
+  preprocessing:
+    use_drnoon_preprocess: false
+    drnoon_precrop: 0.4
+    drnoon_circle_mask: true
+    image_size: 1024
+    normalize_mean: [0.485, 0.456, 0.406]
+    normalize_std: [0.229, 0.224, 0.225]
+
+training:
+  mixed_precision: "bf16"
+
+inference:
+  downstream_checkpoint: "./weights/cac_best.pt"
+  threshold: 0.5
