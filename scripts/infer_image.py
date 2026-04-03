@@ -145,6 +145,7 @@ def main() -> None:
         "device": str(device),
         "downstream_checkpoint": cfg["inference"]["downstream_checkpoint"],
         "foundation_checkpoint": cfg["model"]["foundation"].get("checkpoint"),
+        "num_matched_keys": int(ckpt_info.get("matched_keys", 0)),
         "num_missing_keys": len(ckpt_info.get("missing_keys", [])),
         "num_unexpected_keys": len(ckpt_info.get("unexpected_keys", [])),
     }

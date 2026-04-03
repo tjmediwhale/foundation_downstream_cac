@@ -33,20 +33,34 @@ def _strip_module_prefix(state_dict: Dict[str, torch.Tensor]) -> Dict[str, torch
     return cleaned
 
 
+def _count_matching_keys(model: torch.nn.Module, state_dict: Dict[str, torch.Tensor]) -> int:
+    model_keys = set(model.state_dict().keys())
+    return sum(1 for key in state_dict.keys() if key in model_keys)
+
+
+def _normalize_state_dict_keys(model: torch.nn.Module, state_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+    stripped = _strip_module_prefix(state_dict)
+    if _count_matching_keys(model, stripped) >= _count_matching_keys(model, state_dict):
+        return stripped
+    return state_dict
+
+
 def load_model_checkpoint(model: torch.nn.Module, checkpoint_path: str) -> Dict:
     """Load checkpoint into model and return metadata."""
     payload = torch.load(checkpoint_path, map_location="cpu")
     payload_dict = payload if isinstance(payload, dict) else {"state_dict": payload}
     state_dict = _extract_state_dict(payload_dict)
-
-    try:
-        missing, unexpected = model.load_state_dict(state_dict, strict=False)
-    except RuntimeError:
-        state_dict = _strip_module_prefix(state_dict)
-        missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    state_dict = _normalize_state_dict_keys(model, state_dict)
+    num_matched = _count_matching_keys(model, state_dict)
+    if num_matched == 0:
+        raise RuntimeError(
+            "No checkpoint keys matched the inference model. "
+            f"checkpoint={checkpoint_path}"
+        )
+    missing, unexpected = model.load_state_dict(state_dict, strict=False)
 
     return {
         "missing_keys": list(missing),
         "unexpected_keys": list(unexpected),
+        "matched_keys": num_matched,
     }
-

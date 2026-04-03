@@ -190,6 +190,7 @@ def main() -> None:
         "downstream_checkpoint": cfg["inference"]["downstream_checkpoint"],
         "foundation_checkpoint": cfg["model"]["foundation"].get("checkpoint"),
         "dinov3_repo": cfg["model"]["foundation"]["dinov3_repo"],
+        "num_matched_keys": int(ckpt_info.get("matched_keys", 0)),
         "num_missing_keys": len(ckpt_info.get("missing_keys", [])),
         "num_unexpected_keys": len(ckpt_info.get("unexpected_keys", [])),
         "has_target_column": bool(has_target),
@@ -200,4 +201,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
